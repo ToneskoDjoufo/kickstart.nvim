@@ -177,7 +177,7 @@ vim.diagnostic.config {
   update_in_insert = false,
   severity_sort = true,
   float = { border = 'rounded', source = 'if_many' },
-  underline = { severity = vim.diagnostic.severity.ERROR },
+  -- underline = { severity = vim.diagnostic.severity.ERROR },
 
   -- Can switch between these as you prefer
   virtual_text = true, -- Text shows up at the end of the line
@@ -538,7 +538,9 @@ require('lazy').setup({
 
           -- Execute a code action, usually your cursor needs to be on top of an error
           -- or a suggestion from your LSP for this to activate.
-          map('gra', vim.lsp.buf.code_action, '[G]oto Code [A]ction', { 'n', 'x' })
+          -- map('<M-CR>', vim.lsp.buf.code_action, '[G]oto Code [A]ction', { 'n', 'x' })
+
+          vim.keymap.set({ 'n', 'x' }, '<M-CR>', vim.lsp.buf.code_action, { desc = '[G]oto Code [A]ction' })
 
           -- WARN: This is not Goto Definition, this is Goto Declaration.
           --  For example, in C this would take you to the header.
@@ -614,7 +616,7 @@ require('lazy').setup({
       -- You can press `g?` for help in this menu.
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
-        'lua_ls', -- Lua Language server
+        -- 'lua_ls', -- Lua Language server
         'stylua', -- Used to format Lua code
         -- You can add other tools here that you want Mason to install
       })
@@ -871,7 +873,7 @@ require('lazy').setup({
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
   -- require 'kickstart.plugins.debug',
-  -- require 'kickstart.plugins.indent_line',
+  require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
   -- require 'kickstart.plugins.autopairs',
   -- require 'kickstart.plugins.neo-tree',
@@ -881,7 +883,7 @@ require('lazy').setup({
   --    This is the easiest way to modularize your config.
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
   --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!
@@ -911,3 +913,66 @@ require('lazy').setup({
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
+
+-- 1. Disable the default Tab mapping
+vim.g.copilot_no_tab_map = true
+
+-- 2. Define the mappings
+-- Use <M-key> for Option (Alt) mappings
+local opts = { expr = true, replace_keycodes = false }
+
+-- Accept: Control + Enter (or Control + J)
+vim.keymap.set('i', '<C-A>', 'copilot#Accept("\\<CR>")', opts)
+
+-- Next: Option + ]
+vim.keymap.set('i', '<C-N>', '<Plug>(copilot-next)')
+
+-- Previous: Option + [
+vim.keymap.set('i', '<C-P>', '<Plug>(copilot-previous)')
+
+-- Dismiss: Control + ]
+vim.keymap.set('i', '<C-D>', '<Plug>(copilot-dismiss)')
+
+vim.lsp.config('harper_ls', {
+  filetypes = {
+    'asciidoc',
+    'c',
+    'cpp',
+    'cs',
+    'gitcommit',
+    'go',
+    'html',
+    'java',
+    'javascript',
+    'lua',
+    'markdown',
+    'nix',
+    'python',
+    'ruby',
+    'rust',
+    'swift',
+    'toml',
+    'typescript',
+    'typescriptreact',
+    'haskell',
+    'cmake',
+    'typst',
+    'php',
+    'dart',
+    'clojure',
+    'sh',
+    'tex',
+    'text',
+  },
+
+  settings = {
+    ['harper-ls'] = {
+      linters = {
+        ToDoHyphen = false,
+      },
+      userDictPath = '~/dict.txt',
+    },
+  },
+})
+
+vim.lsp.enable 'harper_ls'
