@@ -974,3 +974,17 @@ vim.lsp.config('harper_ls', {
 })
 
 vim.lsp.enable 'harper_ls'
+
+-- Disable Copilot in competitive programming directory
+local function should_disable_copilot(dir)
+  local target = '/Users/toneskodjoufotafejo/Dev/python/competitive programming'
+  return dir:sub(1, #target) == target
+end
+
+vim.api.nvim_create_autocmd('DirChanged', {
+  callback = function(params)
+    if should_disable_copilot(params.file) then vim.cmd 'Copilot disable' end
+  end,
+})
+
+if should_disable_copilot(vim.loop.cwd()) then vim.cmd 'Copilot disable' end
